@@ -58,8 +58,26 @@ PHP_RAPHF_API void *php_resource_factory_handle_ctor(php_resource_factory_t *f, 
 PHP_RAPHF_API void *php_resource_factory_handle_copy(php_resource_factory_t *f, void *handle TSRMLS_DC);
 PHP_RAPHF_API void php_resource_factory_handle_dtor(php_resource_factory_t *f, void *handle TSRMLS_DC);
 
-typedef struct php_persistent_handle_factory {
-	void *provider;
+typedef struct php_persistent_handle_list {
+	HashTable free;
+	ulong used;
+} php_persistent_handle_list_t;
+
+typedef struct php_persistent_handle_provider {
+	php_persistent_handle_list_t list; /* "ident" => array(handles) entries */
+	php_resource_factory_t rf;
+} php_persistent_handle_provider_t;
+
+typedef struct php_persistent_handle_factory php_persistent_handle_factory_t;
+
+typedef void (*php_persistent_handle_wakeup_t)(php_persistent_handle_factory_t *f, void **handle TSRMLS_DC);
+typedef void (*php_persistent_handle_retire_t)(php_persistent_handle_factory_t *f, void **handle TSRMLS_DC);
+
+struct php_persistent_handle_factory {
+	php_persistent_handle_provider_t *provider;
+
+	php_persistent_handle_wakeup_t wakeup;
+	php_persistent_handle_retire_t retire;
 
 	struct {
 		char *str;
@@ -79,7 +97,7 @@ struct php_persistent_handle_globals {
 };
 
 PHP_RAPHF_API int /* SUCCESS|FAILURE */ php_persistent_handle_provide(const char *name_str, size_t name_len, php_resource_factory_ops_t *fops, void *data, void (*dtor)(void *));
-PHP_RAPHF_API php_persistent_handle_factory_t *php_persistent_handle_concede(php_persistent_handle_factory_t *a, const char *name_str, size_t name_len, const char *ident_str, size_t ident_len TSRMLS_DC);
+PHP_RAPHF_API php_persistent_handle_factory_t *php_persistent_handle_concede(php_persistent_handle_factory_t *a, const char *name_str, size_t name_len, const char *ident_str, size_t ident_len,php_persistent_handle_wakeup_t wakeup, php_persistent_handle_retire_t retire TSRMLS_DC);
 PHP_RAPHF_API void php_persistent_handle_abandon(php_persistent_handle_factory_t *a);
 PHP_RAPHF_API void *php_persistent_handle_acquire(php_persistent_handle_factory_t *a, void *init_arg TSRMLS_DC);
 PHP_RAPHF_API void php_persistent_handle_release(php_persistent_handle_factory_t *a, void *handle TSRMLS_DC);

@@ -42,16 +42,6 @@ static MUTEX_T php_persistent_handle_lock;
 #	define UNLOCK()
 #endif
 
-typedef struct php_persistent_handle_list {
-	HashTable free;
-	ulong used;
-} php_persistent_handle_list_t;
-
-typedef struct php_persistent_handle_provider {
-	php_persistent_handle_list_t list; /* "ident" => array(handles) entries */
-	php_resource_factory_t rf;
-} php_persistent_handle_provider_t;
-
 
 PHP_RAPHF_API php_resource_factory_t *php_resource_factory_init(php_resource_factory_t *f, php_resource_factory_ops_t *fops, void *data, void (*dtor)(void *data))
 {
@@ -266,7 +256,7 @@ static int php_persistent_handle_apply_cleanup_all(void *p TSRMLS_DC, int argc, 
 	return ZEND_HASH_APPLY_KEEP;
 }
 
-static inline STATUS php_persistent_handle_do_acquire(php_persistent_handle_provider_t *provider, const char *ident_str, size_t ident_len, void *init_arg, void **handle TSRMLS_DC)
+static inline STATUS php_persistent_handle_do_acquire(php_persistent_handle_provider_t *provider, const char *ident_str, size_t ident_len, void *init_arg, void **handle, zend_bool *awakened TSRMLS_DC)
 {
 	ulong index;
 	void **handle_ptr;
@@ -275,6 +265,7 @@ static inline STATUS php_persistent_handle_do_acquire(php_persistent_handle_prov
 	if ((list = php_persistent_handle_list_find(provider, ident_str, ident_len TSRMLS_CC))) {
 		zend_hash_internal_pointer_end(&list->free);
 		if (HASH_KEY_NON_EXISTANT != zend_hash_get_current_key(&list->free, NULL, &index, 0) && SUCCESS == zend_hash_get_current_data(&list->free, (void *) &handle_ptr)) {
+			*awakened = 1;
 			*handle = *handle_ptr;
 			zend_hash_index_del(&list->free, index);
 		} else {
@@ -295,7 +286,7 @@ static inline STATUS php_persistent_handle_do_acquire(php_persistent_handle_prov
 	return FAILURE;
 }
 
-static inline STATUS php_persistent_handle_do_release(php_persistent_handle_provider_t *provider, const char *ident_str, size_t ident_len, void **handle TSRMLS_DC)
+static inline STATUS php_persistent_handle_do_release(php_persistent_handle_provider_t *provider, const char *ident_str, size_t ident_len, void **handle, zend_bool *retired TSRMLS_DC)
 {
 	php_persistent_handle_list_t *list;
 
@@ -309,9 +300,9 @@ static inline STATUS php_persistent_handle_do_release(php_persistent_handle_prov
 			if (SUCCESS != zend_hash_next_index_insert(&list->free, (void *) handle, sizeof(void *), NULL)) {
 				return FAILURE;
 			}
+			*retired = 1;
 		}
 
-		*handle = NULL;
 		--provider->list.used;
 		--list->used;
 		return SUCCESS;
@@ -368,7 +359,7 @@ PHP_RAPHF_API STATUS php_persistent_handle_provide(const char *name_str, size_t 
 	return status;
 }
 
-PHP_RAPHF_API php_persistent_handle_factory_t *php_persistent_handle_concede(php_persistent_handle_factory_t *a, const char *name_str, size_t name_len, const char *ident_str, size_t ident_len TSRMLS_DC)
+PHP_RAPHF_API php_persistent_handle_factory_t *php_persistent_handle_concede(php_persistent_handle_factory_t *a, const char *name_str, size_t name_len, const char *ident_str, size_t ident_len, php_persistent_handle_wakeup_t wakeup, php_persistent_handle_retire_t retire TSRMLS_DC)
 {
 	STATUS status = FAILURE;
 	php_persistent_handle_factory_t *free_a = NULL;
@@ -383,7 +374,12 @@ PHP_RAPHF_API php_persistent_handle_factory_t *php_persistent_handle_concede(php
 	UNLOCK();
 
 	if (SUCCESS == status) {
-		a->ident.str = estrndup(ident_str, a->ident.len = ident_len);
+		a->ident.str = estrndup(ident_str, ident_len);
+		a->ident.len = ident_len;
+
+		a->wakeup = wakeup;
+		a->retire = retire;
+
 		if (free_a) {
 			a->free_on_abandon = 1;
 		}
@@ -419,10 +415,15 @@ PHP_RAPHF_API void php_persistent_handle_abandon(php_persistent_handle_factory_t
 PHP_RAPHF_API void *php_persistent_handle_acquire(php_persistent_handle_factory_t *a, void *init_arg  TSRMLS_DC)
 {
 	void *handle = NULL;
+	zend_bool awakened = 0;
 
 	LOCK();
-	php_persistent_handle_do_acquire(a->provider, a->ident.str, a->ident.len, init_arg, &handle TSRMLS_CC);
+	php_persistent_handle_do_acquire(a->provider, a->ident.str, a->ident.len, init_arg, &handle, &awakened TSRMLS_CC);
 	UNLOCK();
+
+	if (awakened && a->wakeup) {
+		a->wakeup(a, &handle TSRMLS_CC);
+	}
 
 	return handle;
 }
@@ -440,9 +441,15 @@ PHP_RAPHF_API void *php_persistent_handle_accrete(php_persistent_handle_factory_
 
 PHP_RAPHF_API void php_persistent_handle_release(php_persistent_handle_factory_t *a, void *handle TSRMLS_DC)
 {
+	zend_bool retired = 0;
+
 	LOCK();
-	php_persistent_handle_do_release(a->provider, a->ident.str, a->ident.len, &handle TSRMLS_CC);
+	php_persistent_handle_do_release(a->provider, a->ident.str, a->ident.len, &handle, &retired TSRMLS_CC);
 	UNLOCK();
+
+	if (retired && a->retire) {
+		a->retire(a, &handle TSRMLS_CC);
+	}
 }
 
 PHP_RAPHF_API void php_persistent_handle_cleanup(const char *name_str, size_t name_len, const char *ident_str, size_t ident_len TSRMLS_DC)
