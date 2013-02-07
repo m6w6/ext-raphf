@@ -85,18 +85,14 @@ struct php_persistent_handle_factory {
 	} ident;
 
 	unsigned free_on_abandon:1;
-} php_persistent_handle_factory_t;
+};
 
 struct php_persistent_handle_globals {
 	ulong limit;
-	struct {
-		ulong h;
-		char *s;
-		size_t l;
-	} ident;
+	HashTable hash;
 };
 
-PHP_RAPHF_API int /* SUCCESS|FAILURE */ php_persistent_handle_provide(const char *name_str, size_t name_len, php_resource_factory_ops_t *fops, void *data, void (*dtor)(void *));
+PHP_RAPHF_API int /* SUCCESS|FAILURE */ php_persistent_handle_provide(const char *name_str, size_t name_len, php_resource_factory_ops_t *fops, void *data, void (*dtor)(void *) TSRMLS_DC);
 PHP_RAPHF_API php_persistent_handle_factory_t *php_persistent_handle_concede(php_persistent_handle_factory_t *a, const char *name_str, size_t name_len, const char *ident_str, size_t ident_len,php_persistent_handle_wakeup_t wakeup, php_persistent_handle_retire_t retire TSRMLS_DC);
 PHP_RAPHF_API void php_persistent_handle_abandon(php_persistent_handle_factory_t *a);
 PHP_RAPHF_API void *php_persistent_handle_acquire(php_persistent_handle_factory_t *a, void *init_arg TSRMLS_DC);
