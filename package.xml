@@ -19,18 +19,18 @@ http://pear.php.net/dtd/package-2.0.xsd">
   <email>mike@php.net</email>
   <active>yes</active>
  </lead>
- <date>2013-02-16</date>
+ <date>2013-07-07</date>
  <version>
-  <release>0.1.0</release>
+  <release>1.0.0</release>
   <api>1.0.0</api>
  </version>
  <stability>
-  <release>beta</release>
+  <release>stable</release>
   <api>stable</api>
  </stability>
  <license>BSD, revised</license>
  <notes><![CDATA[
-* Initial split-off release
+* Stable release
 ]]></notes>
  <contents>
   <dir name="/">
