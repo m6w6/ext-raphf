@@ -16,7 +16,7 @@
 extern zend_module_entry raphf_module_entry;
 #define phpext_raphf_ptr &raphf_module_entry
 
-#define PHP_RAPHF_VERSION "1.0.0"
+#define PHP_RAPHF_VERSION "1.0.1"
 
 #ifdef PHP_WIN32
 #	define PHP_RAPHF_API __declspec(dllexport)
@@ -128,7 +128,7 @@ ZEND_BEGIN_MODULE_GLOBALS(raphf)
 ZEND_END_MODULE_GLOBALS(raphf)
 
 #ifdef ZTS
-#	define PHP_RAPHF_G ((zend_raphf_globals *)
+#	define PHP_RAPHF_G ((zend_raphf_globals *) \
 		(*((void ***) tsrm_ls))[TSRM_UNSHUFFLE_RSRC_ID(raphf_globals_id)])
 #else
 #	define PHP_RAPHF_G (&raphf_globals)
