@@ -16,7 +16,7 @@
 extern zend_module_entry raphf_module_entry;
 #define phpext_raphf_ptr &raphf_module_entry
 
-#define PHP_RAPHF_VERSION "1.0.2dev"
+#define PHP_RAPHF_VERSION "1.0.2"
 
 #ifdef PHP_WIN32
 #	define PHP_RAPHF_API __declspec(dllexport)
