@@ -564,7 +564,7 @@ PHP_INI_END()
 
 static HashTable *php_persistent_handles_global_hash;
 
-static void php_raphf_globals_init(zend_raphf_globals *raphf_globals)
+static PHP_GINIT_FUNCTION(raphf)
 {
 	raphf_globals->persistent_handle.limit = -1;
 
@@ -577,17 +577,14 @@ static void php_raphf_globals_init(zend_raphf_globals *raphf_globals)
 	}
 }
 
-static void php_raphf_globals_dtor(zend_raphf_globals *raphf_globals)
+static PHP_GSHUTDOWN_FUNCTION(raphf)
 {
 	zend_hash_destroy(&raphf_globals->persistent_handle.hash);
 }
 
 PHP_MINIT_FUNCTION(raphf)
 {
-	ZEND_INIT_MODULE_GLOBALS(raphf, php_raphf_globals_init,
-			php_raphf_globals_dtor);
 	php_persistent_handles_global_hash = &PHP_RAPHF_G->persistent_handle.hash;
-
 	REGISTER_INI_ENTRIES();
 	return SUCCESS;
 }
@@ -659,7 +656,11 @@ zend_module_entry raphf_module_entry = {
 	NULL,
 	PHP_MINFO(raphf),
 	PHP_RAPHF_VERSION,
-	STANDARD_MODULE_PROPERTIES
+	ZEND_MODULE_GLOBALS(raphf),
+	PHP_GINIT(raphf),
+	PHP_GSHUTDOWN(raphf),
+	NULL,
+	STANDARD_MODULE_PROPERTIES_EX
 };
 /* }}} */
 

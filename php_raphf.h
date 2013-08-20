@@ -16,7 +16,7 @@
 extern zend_module_entry raphf_module_entry;
 #define phpext_raphf_ptr &raphf_module_entry
 
-#define PHP_RAPHF_VERSION "1.0.1"
+#define PHP_RAPHF_VERSION "1.0.2dev"
 
 #ifdef PHP_WIN32
 #	define PHP_RAPHF_API __declspec(dllexport)
@@ -106,7 +106,10 @@ PHP_RAPHF_API int /* SUCCESS|FAILURE */ php_persistent_handle_provide(
 		const char *name_str, size_t name_len, php_resource_factory_ops_t *fops,
 		void *data, void (*dtor)(void *) TSRMLS_DC);
 PHP_RAPHF_API php_persistent_handle_factory_t *php_persistent_handle_concede(
-		php_persistent_handle_factory_t *a, const char *name_str, size_t name_len, const char *ident_str, size_t ident_len,php_persistent_handle_wakeup_t wakeup, php_persistent_handle_retire_t retire TSRMLS_DC);
+		php_persistent_handle_factory_t *a, const char *name_str,
+		size_t name_len, const char *ident_str, size_t ident_len,
+		php_persistent_handle_wakeup_t wakeup,
+		php_persistent_handle_retire_t retire TSRMLS_DC);
 PHP_RAPHF_API void php_persistent_handle_abandon(
 		php_persistent_handle_factory_t *a);
 PHP_RAPHF_API void *php_persistent_handle_acquire(
