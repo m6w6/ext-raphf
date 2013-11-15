@@ -1,0 +1,7 @@
+
+
+ARG_ENABLE("raphf", "for raphf support", "no");
+
+if (PHP_RAPHF == "yes") {
+		EXTENSION("raphf", "php_raphf.c");
+}

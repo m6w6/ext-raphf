@@ -5,7 +5,7 @@
 /.deps
 /*.lo
 /*.la
-/config.[^m]*
+/config.[^mw]*
 /configure*
 /lib*
 /ac*.m4
