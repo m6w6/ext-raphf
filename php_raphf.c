@@ -592,6 +592,7 @@ PHP_MINIT_FUNCTION(raphf)
 PHP_MSHUTDOWN_FUNCTION(raphf)
 {
 	UNREGISTER_INI_ENTRIES();
+	php_persistent_handles_global_hash = NULL;
 	return SUCCESS;
 }
 

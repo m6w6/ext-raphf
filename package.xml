@@ -19,9 +19,9 @@ http://pear.php.net/dtd/package-2.0.xsd">
   <email>mike@php.net</email>
   <active>yes</active>
  </lead>
- <date>2013-11-15</date>
+ <date>2013-11-25</date>
  <version>
-  <release>1.0.3</release>
+  <release>1.0.4</release>
   <api>1.0.0</api>
  </version>
  <stability>
@@ -30,7 +30,7 @@ http://pear.php.net/dtd/package-2.0.xsd">
  </stability>
  <license>BSD, revised</license>
  <notes><![CDATA[
-* Added pecl/http-v2 tests
+* Fix re-use of destroyed hashtable with phpdbg
 ]]></notes>
  <contents>
   <dir name="/">
