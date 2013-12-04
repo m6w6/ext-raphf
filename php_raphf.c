@@ -19,6 +19,22 @@
 #include "ext/standard/info.h"
 #include "php_raphf.h"
 
+struct php_persistent_handle_globals {
+	ulong limit;
+	HashTable hash;
+};
+
+ZEND_BEGIN_MODULE_GLOBALS(raphf)
+	struct php_persistent_handle_globals persistent_handle;
+ZEND_END_MODULE_GLOBALS(raphf)
+
+#ifdef ZTS
+#	define PHP_RAPHF_G ((zend_raphf_globals *) \
+		(*((void ***) tsrm_ls))[TSRM_UNSHUFFLE_RSRC_ID(raphf_globals_id)])
+#else
+#	define PHP_RAPHF_G (&raphf_globals)
+#endif
+
 ZEND_DECLARE_MODULE_GLOBALS(raphf)
 
 typedef int STATUS;
@@ -31,9 +47,8 @@ typedef int STATUS;
 #	define inline
 #endif
 
-PHP_RAPHF_API php_resource_factory_t *php_resource_factory_init(
-		php_resource_factory_t *f, php_resource_factory_ops_t *fops, void *data,
-		void (*dtor)(void *data))
+php_resource_factory_t *php_resource_factory_init(php_resource_factory_t *f,
+		php_resource_factory_ops_t *fops, void *data, void (*dtor)(void *data))
 {
 	if (!f) {
 		f = emalloc(sizeof(*f));
@@ -50,12 +65,12 @@ PHP_RAPHF_API php_resource_factory_t *php_resource_factory_init(
 	return f;
 }
 
-PHP_RAPHF_API unsigned php_resource_factory_addref(php_resource_factory_t *rf)
+unsigned php_resource_factory_addref(php_resource_factory_t *rf)
 {
 	return ++rf->refcount;
 }
 
-PHP_RAPHF_API void php_resource_factory_dtor(php_resource_factory_t *f)
+void php_resource_factory_dtor(php_resource_factory_t *f)
 {
 	--f->refcount;
 
@@ -66,7 +81,7 @@ PHP_RAPHF_API void php_resource_factory_dtor(php_resource_factory_t *f)
 	}
 }
 
-PHP_RAPHF_API void php_resource_factory_free(php_resource_factory_t **f)
+void php_resource_factory_free(php_resource_factory_t **f)
 {
 	if (*f) {
 		php_resource_factory_dtor(*f);
@@ -77,7 +92,7 @@ PHP_RAPHF_API void php_resource_factory_free(php_resource_factory_t **f)
 	}
 }
 
-PHP_RAPHF_API void *php_resource_factory_handle_ctor(php_resource_factory_t *f,
+void *php_resource_factory_handle_ctor(php_resource_factory_t *f,
 		void *init_arg TSRMLS_DC)
 {
 	if (f->fops.ctor) {
@@ -86,7 +101,7 @@ PHP_RAPHF_API void *php_resource_factory_handle_ctor(php_resource_factory_t *f,
 	return NULL;
 }
 
-PHP_RAPHF_API void *php_resource_factory_handle_copy(php_resource_factory_t *f,
+void *php_resource_factory_handle_copy(php_resource_factory_t *f,
 		void *handle TSRMLS_DC)
 {
 	if (f->fops.copy) {
@@ -95,7 +110,7 @@ PHP_RAPHF_API void *php_resource_factory_handle_copy(php_resource_factory_t *f,
 	return NULL;
 }
 
-PHP_RAPHF_API void php_resource_factory_handle_dtor(php_resource_factory_t *f,
+void php_resource_factory_handle_dtor(php_resource_factory_t *f,
 		void *handle TSRMLS_DC)
 {
 	if (f->fops.dtor) {
@@ -311,7 +326,7 @@ PHP_RAPHF_API STATUS php_persistent_handle_provide(const char *name_str,
 	return status;
 }
 
-PHP_RAPHF_API php_persistent_handle_factory_t *php_persistent_handle_concede(
+php_persistent_handle_factory_t *php_persistent_handle_concede(
 		php_persistent_handle_factory_t *a, const char *name_str,
 		size_t name_len, const char *ident_str, size_t ident_len,
 		php_persistent_handle_wakeup_t wakeup,
@@ -369,7 +384,7 @@ PHP_RAPHF_API void php_persistent_handle_abandon(
 	}
 }
 
-PHP_RAPHF_API void *php_persistent_handle_acquire(
+void *php_persistent_handle_acquire(
 		php_persistent_handle_factory_t *a, void *init_arg  TSRMLS_DC)
 {
 	int key;
@@ -406,7 +421,7 @@ PHP_RAPHF_API void *php_persistent_handle_acquire(
 	return handle;
 }
 
-PHP_RAPHF_API void *php_persistent_handle_accrete(
+void *php_persistent_handle_accrete(
 		php_persistent_handle_factory_t *a, void *handle TSRMLS_DC)
 {
 	void *new_handle = NULL;
@@ -426,7 +441,7 @@ PHP_RAPHF_API void *php_persistent_handle_accrete(
 	return new_handle;
 }
 
-PHP_RAPHF_API void php_persistent_handle_release(
+void php_persistent_handle_release(
 		php_persistent_handle_factory_t *a, void *handle TSRMLS_DC)
 {
 	php_persistent_handle_list_t *list;
@@ -453,8 +468,8 @@ PHP_RAPHF_API void php_persistent_handle_release(
 	}
 }
 
-PHP_RAPHF_API void php_persistent_handle_cleanup(const char *name_str,
-		size_t name_len, const char *ident_str, size_t ident_len TSRMLS_DC)
+void php_persistent_handle_cleanup(const char *name_str, size_t name_len,
+		const char *ident_str, size_t ident_len TSRMLS_DC)
 {
 	php_persistent_handle_provider_t *provider;
 	php_persistent_handle_list_t *list;
@@ -487,7 +502,7 @@ PHP_RAPHF_API void php_persistent_handle_cleanup(const char *name_str,
 	}
 }
 
-PHP_RAPHF_API HashTable *php_persistent_handle_statall(HashTable *ht TSRMLS_DC)
+HashTable *php_persistent_handle_statall(HashTable *ht TSRMLS_DC)
 {
 	if (zend_hash_num_elements(&PHP_RAPHF_G->persistent_handle.hash)) {
 		if (!ht) {
@@ -510,8 +525,7 @@ static php_resource_factory_ops_t php_persistent_handle_resource_factory_ops = {
 	(php_resource_factory_handle_dtor_t) php_persistent_handle_release
 };
 
-PHP_RAPHF_API php_resource_factory_ops_t *
-php_persistent_handle_get_resource_factory_ops(void)
+php_resource_factory_ops_t *php_persistent_handle_get_resource_factory_ops(void)
 {
 	return &php_persistent_handle_resource_factory_ops;
 }
