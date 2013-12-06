@@ -8,7 +8,7 @@ PROJECT_NAME           = "Resource and persistent handle factory API"
 PROJECT_NUMBER         =
 PROJECT_BRIEF          = "A facility to manage possibly persistent resources with a comprehensible API. "\
                          "Provides simliar functionality like the zend_list API, but with more flexiblity and freedom."
-PROJECT_LOGO           = "/home/mike/Downloads/raphf.png"
+PROJECT_LOGO           = raphf.png
 OUTPUT_DIRECTORY       = 
 CREATE_SUBDIRS         = NO
 OUTPUT_LANGUAGE        = English
