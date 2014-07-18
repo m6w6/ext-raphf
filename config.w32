@@ -4,4 +4,7 @@ ARG_ENABLE("raphf", "for raphf support", "no");
 
 if (PHP_RAPHF == "yes") {
 		EXTENSION("raphf", "php_raphf.c");
+
+		AC_DEFINE("HAVE_RAPHF", 1);
+		PHP_INSTALL_HEADERS("ext/raphf", "php_raphf.h");
 }
