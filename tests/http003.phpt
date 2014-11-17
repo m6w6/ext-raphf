@@ -20,17 +20,19 @@ do {
 
 unset($c);
 
-var_dump(raphf\stat_persistent_handles());
+$h = (array) raphf\stat_persistent_handles();
+var_dump(array_intersect_key($h, array_flip(preg_grep("/^http/", array_keys($h)))));
 
 raphf\clean_persistent_handles(null, "php.net:80");
 
-var_dump(raphf\stat_persistent_handles());
+$h = (array) raphf\stat_persistent_handles();
+var_dump(array_intersect_key($h, array_flip(preg_grep("/^http/", array_keys($h)))));
 
 ?>
 Done
 --EXPECTF--
 Test
-object(stdClass)#%d (2) {
+array(2) {
   ["http\Client\Curl"]=>
   array(1) {
     ["php.net:80"]=>
@@ -52,7 +54,7 @@ object(stdClass)#%d (2) {
     }
   }
 }
-object(stdClass)#%d (2) {
+array(2) {
   ["http\Client\Curl"]=>
   array(1) {
     ["php.net:80"]=>
