@@ -18,7 +18,7 @@
 extern zend_module_entry raphf_module_entry;
 #define phpext_raphf_ptr &raphf_module_entry
 
-#define PHP_RAPHF_VERSION "1.0.4"
+#define PHP_RAPHF_VERSION "2.0.0dev"
 
 #ifdef PHP_WIN32
 #	define PHP_RAPHF_API __declspec(dllexport)
@@ -254,7 +254,7 @@ struct php_persistent_handle_factory {
  * @param dtor \a data destructor
  * @return SUCCESS/FAILURE
  */
-PHP_RAPHF_API int /* SUCCESS|FAILURE */ php_persistent_handle_provide(
+PHP_RAPHF_API ZEND_RESULT_CODE php_persistent_handle_provide(
 		const char *name_str, size_t name_len, php_resource_factory_ops_t *fops,
 		void *data, void (*dtor)(void *) TSRMLS_DC);
 
