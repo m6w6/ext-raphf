@@ -117,7 +117,9 @@ void php_resource_factory_handle_dtor(php_resource_factory_t *f,
 static inline php_persistent_handle_list_t *php_persistent_handle_list_init(
 		php_persistent_handle_list_t *list)
 {
-	list = pemalloc(sizeof(*list), 1);
+	if (!list) {
+		list = pemalloc(sizeof(*list), 1);
+	}
 	list->used = 0;
 	zend_hash_init(&list->free, 0, NULL, NULL, 1);
 
@@ -214,6 +216,7 @@ static int php_persistent_handle_list_apply_dtor(zval *p,
 {
 	php_persistent_handle_list_t *list = Z_PTR_P(p);
 	php_persistent_handle_list_free(&list, provider TSRMLS_CC);
+	ZVAL_PTR(p, NULL);
 	return ZEND_HASH_APPLY_REMOVE;
 }
 
@@ -237,7 +240,7 @@ static inline php_persistent_handle_list_t *php_persistent_handle_list_find(
 		zval p;
 
 		ZVAL_PTR(&p, list);
-		if (zend_symtable_str_update(&provider->list.free, ident_str, ident_len+1,
+		if (zend_symtable_str_update(&provider->list.free, ident_str, ident_len,
 				&p)) {
 #if PHP_RAPHF_DEBUG_PHANDLES
 			fprintf(stderr, "LSTFIND: %p (new)\n", list);
@@ -301,7 +304,7 @@ ZEND_RESULT_CODE php_persistent_handle_provide(const char *name_str,
 
 			ZVAL_PTR(&p, provider);
 			if (zend_symtable_str_update(&PHP_RAPHF_G->persistent_handle.hash,
-					name_str, name_len+1, &p)) {
+					name_str, name_len, &p)) {
 				return SUCCESS;
 			}
 			php_resource_factory_dtor(&provider->rf);
@@ -395,7 +398,7 @@ void *php_persistent_handle_acquire(php_persistent_handle_factory_t *a,
 					init_arg TSRMLS_CC);
 		}
 #if PHP_RAPHF_DEBUG_PHANDLES
-		fprintf(stderr, "CREATED: %p\n", *handle);
+		fprintf(stderr, "CREATED: %p\n", handle);
 #endif
 		if (handle) {
 			++a->provider->list.used;
@@ -436,7 +439,7 @@ void php_persistent_handle_release(php_persistent_handle_factory_t *a,
 	if (list) {
 		if (a->provider->list.used >= PHP_RAPHF_G->persistent_handle.limit) {
 #if PHP_RAPHF_DEBUG_PHANDLES
-			fprintf(stderr, "DESTROY: %p\n", *handle);
+			fprintf(stderr, "DESTROY: %p\n", handle);
 #endif
 			php_resource_factory_handle_dtor(&a->provider->rf, handle TSRMLS_CC);
 		} else {
