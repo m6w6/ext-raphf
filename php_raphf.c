@@ -20,7 +20,7 @@
 #include "php_raphf.h"
 
 #ifndef PHP_RAPHF_TEST
-#	define PHP_RAPHF_TEST 1
+#	define PHP_RAPHF_TEST 0
 #endif
 
 struct php_persistent_handle_globals {
@@ -137,8 +137,8 @@ static int php_persistent_handle_apply_stat(zval *p TSRMLS_DC, int argc,
 	zval zsubentry, *zentry = va_arg(argv, zval *);
 
 	array_init(&zsubentry);
-	add_assoc_long_ex(&zsubentry, ZEND_STRS("used"), list->used);
-	add_assoc_long_ex(&zsubentry, ZEND_STRS("free"),
+	add_assoc_long_ex(&zsubentry, ZEND_STRL("used"), list->used);
+	add_assoc_long_ex(&zsubentry, ZEND_STRL("free"),
 			zend_hash_num_elements(&list->free));
 	if (key->key) {
 		add_assoc_zval_ex(zentry, key->key->val, key->key->len, &zsubentry);
@@ -315,7 +315,7 @@ ZEND_RESULT_CODE php_persistent_handle_provide(const char *name_str,
 
 			ZVAL_PTR(&p, provider);
 			if (zend_symtable_str_update(&PHP_RAPHF_G->persistent_handle.hash,
-					name_str, name_len + 1, &p)) {
+					name_str, name_len, &p)) {
 				return SUCCESS;
 			}
 			php_resource_factory_dtor(&provider->rf);
@@ -340,7 +340,7 @@ php_persistent_handle_factory_t *php_persistent_handle_concede(
 	memset(a, 0, sizeof(*a));
 
 	a->provider = zend_symtable_str_find_ptr(&PHP_RAPHF_G->persistent_handle.hash,
-			name_str, name_len+1);
+			name_str, name_len);
 
 	if (a->provider) {
 		a->ident.str = estrndup(ident_str, ident_len);
@@ -474,7 +474,7 @@ void php_persistent_handle_cleanup(const char *name_str, size_t name_len,
 
 	if (name_str && name_len) {
 		provider = zend_symtable_str_find_ptr(&PHP_RAPHF_G->persistent_handle.hash,
-				name_str, name_len+1);
+				name_str, name_len);
 
 		if (provider) {
 			if (ident_str && ident_len) {
@@ -570,6 +570,7 @@ static const zend_function_entry raphf_functions[] = {
 			ai_raphf_clean_persistent_handles, 0)
 #if PHP_RAPHF_TEST
 	ZEND_NS_FENTRY("raphf", provide, ZEND_FN(raphf_provide), NULL, 0)
+	ZEND_NS_FENTRY("raphf", conceal, ZEND_FN(raphf_conceal), NULL, 0)
 	ZEND_NS_FENTRY("raphf", concede, ZEND_FN(raphf_concede), NULL, 0)
 	ZEND_NS_FENTRY("raphf", dispute, ZEND_FN(raphf_dispute), NULL, 0)
 	ZEND_NS_FENTRY("raphf", handle_ctor, ZEND_FN(raphf_handle_ctor), NULL, 0)

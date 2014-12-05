@@ -46,7 +46,6 @@ static void raphf_user_dtor(void *opaque)
 {
 	struct raphf_user *ru = opaque;
 
-	fprintf(stderr, "Freeing raphf_user struct\n");
 	zend_fcall_info_argn(&ru->data.dtor.fci, 1, &ru->data.data);
 	zend_fcall_info_call(&ru->data.dtor.fci, &ru->data.dtor.fcc, NULL, NULL);
 	zend_fcall_info_args_clear(&ru->data.dtor.fci, 1);
@@ -141,8 +140,20 @@ static PHP_FUNCTION(raphf_provide)
 
 	if (SUCCESS != php_persistent_handle_provide(name_str, name_len,
 			&user_ops, ru, raphf_user_dtor)) {
+		RETURN_FALSE;
+	}
+	RETURN_TRUE;
+}
+
+static PHP_FUNCTION(raphf_conceal)
+{
+	zend_string *name;
+
+	if (SUCCESS != zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "S", &name)) {
 		return;
 	}
+
+	RETURN_BOOL(FAILURE != zend_hash_del(&PHP_RAPHF_G->persistent_handle.hash, name));
 }
 
 static PHP_FUNCTION(raphf_concede)
@@ -186,7 +197,7 @@ static PHP_FUNCTION(raphf_dispute)
 		return;
 	}
 
-	zend_list_close(Z_RES_P(zrf));
+	RETURN_BOOL(SUCCESS == zend_list_close(Z_RES_P(zrf)));
 }
 
 static PHP_FUNCTION(raphf_handle_ctor)
@@ -231,6 +242,7 @@ static PHP_FUNCTION(raphf_handle_dtor)
 
 static PHP_MINIT_FUNCTION(raphf_test)
 {
+	zend_register_long_constant(ZEND_STRL("RAPHF_TEST"), PHP_RAPHF_TEST, CONST_CS|CONST_PERSISTENT, module_number);
 	raphf_user_le = zend_register_list_destructors_ex(raphf_user_res_dtor, NULL,
 			"raphf_user", module_number);
 	return SUCCESS;

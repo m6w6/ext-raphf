@@ -129,7 +129,7 @@ PHP_RAPHF_API void php_resource_factory_dtor(php_resource_factory_t *f);
 /**
  * Destroy and free the resource factory.
  *
- * Calls php_resource_factory_dtor() and frees \æ f if the factory's refcount
+ * Calls php_resource_factory_dtor() and frees \a f if the factory's refcount
  * reached 0.
  *
  * @param f the resource factory
