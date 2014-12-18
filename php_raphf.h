@@ -41,8 +41,7 @@ extern zend_module_entry raphf_module_entry;
  * @param init_arg is the \a init_arg from php_resource_factory_init()
  * @return the created (persistent) handle
  */
-typedef void *(*php_resource_factory_handle_ctor_t)(void *opaque,
-		void *init_arg TSRMLS_DC);
+typedef void *(*php_resource_factory_handle_ctor_t)(void *opaque, void *init_arg);
 
 /**
  * The copy constructor of a resource.
@@ -50,8 +49,7 @@ typedef void *(*php_resource_factory_handle_ctor_t)(void *opaque,
  * @param opaque the factory's data
  * @param handle the (persistent) handle to copy
  */
-typedef void *(*php_resource_factory_handle_copy_t)(void *opaque,
-		void *handle TSRMLS_DC);
+typedef void *(*php_resource_factory_handle_copy_t)(void *opaque, void *handle);
 
 /**
  * The destructor of a resource.
@@ -59,8 +57,7 @@ typedef void *(*php_resource_factory_handle_copy_t)(void *opaque,
  * @param opaque the factory's data
  * @param handle the handle to destroy
  */
-typedef void (*php_resource_factory_handle_dtor_t)(void *opaque,
-		void *handle TSRMLS_DC);
+typedef void (*php_resource_factory_handle_dtor_t)(void *opaque, void *handle);
 
 /**
  * The resource ops consisting of a ctor, a copy ctor and a dtor.
@@ -144,7 +141,7 @@ PHP_RAPHF_API void php_resource_factory_free(php_resource_factory_t **f);
  * @return the new resource
  */
 PHP_RAPHF_API void *php_resource_factory_handle_ctor(php_resource_factory_t *f,
-		void *init_arg TSRMLS_DC);
+		void *init_arg);
 
 /**
  * Create a copy of the resource \a handle
@@ -154,7 +151,7 @@ PHP_RAPHF_API void *php_resource_factory_handle_ctor(php_resource_factory_t *f,
  * @return the copy
  */
 PHP_RAPHF_API void *php_resource_factory_handle_copy(php_resource_factory_t *f,
-		void *handle TSRMLS_DC);
+		void *handle);
 
 /**
  * Destroy (and free) the resource
@@ -163,7 +160,7 @@ PHP_RAPHF_API void *php_resource_factory_handle_copy(php_resource_factory_t *f,
  * @param handle the resource to destroy
  */
 PHP_RAPHF_API void php_resource_factory_handle_dtor(php_resource_factory_t *f,
-		void *handle TSRMLS_DC);
+		void *handle);
 
 /**
  * Persistent handles storage
@@ -200,12 +197,12 @@ typedef struct php_persistent_handle_factory php_persistent_handle_factory_t;
  * Wakeup the persistent handle on re-acquisition.
  */
 typedef void (*php_persistent_handle_wakeup_t)(
-		php_persistent_handle_factory_t *f, void **handle TSRMLS_DC);
+		php_persistent_handle_factory_t *f, void **handle);
 /**
  * Retire the persistent handle on release.
  */
 typedef void (*php_persistent_handle_retire_t)(
-		php_persistent_handle_factory_t *f, void **handle TSRMLS_DC);
+		php_persistent_handle_factory_t *f, void **handle);
 
 /**
  * Definition of a persistent handle factory.
@@ -256,7 +253,7 @@ struct php_persistent_handle_factory {
  */
 PHP_RAPHF_API ZEND_RESULT_CODE php_persistent_handle_provide(
 		const char *name_str, size_t name_len, php_resource_factory_ops_t *fops,
-		void *data, void (*dtor)(void *) TSRMLS_DC);
+		void *data, void (*dtor)(void *));
 
 /**
  * Retrieve a persistent handle factory at runtime.
@@ -281,7 +278,7 @@ PHP_RAPHF_API php_persistent_handle_factory_t *php_persistent_handle_concede(
 		php_persistent_handle_factory_t *a, const char *name_str,
 		size_t name_len, const char *ident_str, size_t ident_len,
 		php_persistent_handle_wakeup_t wakeup,
-		php_persistent_handle_retire_t retire TSRMLS_DC);
+		php_persistent_handle_retire_t retire);
 
 /**
  * Abandon the persistent handle factory.
@@ -309,7 +306,7 @@ PHP_RAPHF_API void php_persistent_handle_abandon(
  * @return the acquired resource
  */
 PHP_RAPHF_API void *php_persistent_handle_acquire(
-		php_persistent_handle_factory_t *a, void *init_arg TSRMLS_DC);
+		php_persistent_handle_factory_t *a, void *init_arg);
 
 /**
  * Release a persistent handle.
@@ -325,7 +322,7 @@ PHP_RAPHF_API void *php_persistent_handle_acquire(
  * @param handle the handle to release
  */
 PHP_RAPHF_API void php_persistent_handle_release(
-		php_persistent_handle_factory_t *a, void *handle TSRMLS_DC);
+		php_persistent_handle_factory_t *a, void *handle);
 
 /**
  * Copy a persistent handle.
@@ -336,7 +333,7 @@ PHP_RAPHF_API void php_persistent_handle_release(
  * @param handle the resource to accrete
  */
 PHP_RAPHF_API void *php_persistent_handle_accrete(
-		php_persistent_handle_factory_t *a, void *handle TSRMLS_DC);
+		php_persistent_handle_factory_t *a, void *handle);
 
 /**
  * Retrieve persistent handle resource factory ops.
@@ -398,7 +395,7 @@ php_persistent_handle_get_resource_factory_ops(void);
  * @param ident_len the subsidiary namespace name length
  */
 PHP_RAPHF_API void php_persistent_handle_cleanup(const char *name_str,
-		size_t name_len, const char *ident_str, size_t ident_len TSRMLS_DC);
+		size_t name_len, const char *ident_str, size_t ident_len);
 
 /**
  * Retrieve statistics about the current process/thread's persistent handles.
@@ -415,7 +412,7 @@ PHP_RAPHF_API void php_persistent_handle_cleanup(const char *name_str,
  *     ]
  * ~~~~~~~~~~~~~~~
  */
-PHP_RAPHF_API HashTable *php_persistent_handle_statall(HashTable *ht TSRMLS_DC);
+PHP_RAPHF_API HashTable *php_persistent_handle_statall(HashTable *ht);
 
 #endif	/* PHP_RAPHF_H */
 
