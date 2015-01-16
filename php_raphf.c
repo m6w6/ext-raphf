@@ -384,14 +384,14 @@ void *php_persistent_handle_acquire(php_persistent_handle_factory_t *a, void *in
 {
 	int key;
 	zval *p;
-	ulong index;
+	zend_ulong index;
 	void *handle = NULL;
 	php_persistent_handle_list_t *list;
 
 	list = php_persistent_handle_list_find(a->provider, a->ident.str, a->ident.len);
 	if (list) {
 		zend_hash_internal_pointer_end(&list->free);
-		key = zend_hash_get_current_key(&list->free, NULL, &index, 0);
+		key = zend_hash_get_current_key(&list->free, NULL, &index);
 		p = zend_hash_get_current_data(&list->free);
 		if (p && HASH_KEY_NON_EXISTENT != key) {
 			handle = Z_PTR_P(p);
