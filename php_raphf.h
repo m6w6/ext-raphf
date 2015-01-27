@@ -208,7 +208,7 @@ typedef void (*php_persistent_handle_retire_t)(
  * Definition of a persistent handle factory.
  *
  * php_persistent_handle_concede() will return a pointer to a
- * php_persistent_handle_factory if a provider for the \a name_str has
+ * php_persistent_handle_factory if a provider for the \a name has
  * been registered with php_persistent_handle_provide().
  */
 struct php_persistent_handle_factory {
@@ -220,12 +220,7 @@ struct php_persistent_handle_factory {
 	php_persistent_handle_retire_t retire;
 
 	/** The ident for which this factory manages resources */
-	struct {
-		/** ident string */
-		char *str;
-		/** ident length */
-		size_t len;
-	} ident;
+	zend_string *ident;
 
 	/** Whether it has to be free'd on php_persistent_handle_abandon() */
 	unsigned free_on_abandon:1;
@@ -244,39 +239,36 @@ struct php_persistent_handle_factory {
  * A php_persistent_handle_factory can then be retrieved by
  * php_persistent_handle_concede() at runtime.
  *
- * @param name_str the provider name, e.g. "http\Client\Curl"
- * @param name_len the provider name length, e.g. strlen("http\Client\Curl")
+ * @param name the provider name, e.g. "http\Client\Curl"
  * @param fops the resource factory ops
  * @param data opaque user data
  * @param dtor \a data destructor
  * @return SUCCESS/FAILURE
  */
 PHP_RAPHF_API ZEND_RESULT_CODE php_persistent_handle_provide(
-		const char *name_str, size_t name_len, php_resource_factory_ops_t *fops,
+		zend_string *name, php_resource_factory_ops_t *fops,
 		void *data, void (*dtor)(void *));
 
 /**
  * Retrieve a persistent handle factory at runtime.
  *
- * If a persistent handle provider has been registered for \a name_str, a new
- * php_persistent_handle_factory creating resources in the \a ident_str
+ * If a persistent handle provider has been registered for \a name, a new
+ * php_persistent_handle_factory creating resources in the \a ident
  * namespace will be constructed.
  *
  * The wakeup routine \a wakeup and the retire routine \a retire will be
  * assigned to the new php_persistent_handle_factory.
  *
  * @param a pointer to a factory; allocated on the heap if NULL
- * @param name_str the provider name, e.g. "http\Client\Curl"
- * @param name_len the provider name length, e.g. strlen("http\Client\Curl")
- * @param ident_str the subsidiary namespace, e.g. "php.net:80"
- * @param ident_len the subsidiary namespace lenght, e.g. strlen("php.net:80")
+ * @param name the provider name, e.g. "http\Client\Curl"
+ * @param ident the subsidiary namespace, e.g. "php.net:80"
  * @param wakeup any persistent handle wakeup routine
  * @param retire any persistent handle retire routine
  * @return \a a or an allocated persistent handle factory
  */
 PHP_RAPHF_API php_persistent_handle_factory_t *php_persistent_handle_concede(
-		php_persistent_handle_factory_t *a, const char *name_str,
-		size_t name_len, const char *ident_str, size_t ident_len,
+		php_persistent_handle_factory_t *a,
+		zend_string *name, zend_string *ident,
 		php_persistent_handle_wakeup_t wakeup,
 		php_persistent_handle_retire_t retire);
 
@@ -345,21 +337,19 @@ PHP_RAPHF_API void *php_persistent_handle_accrete(
  *
  * Example:
  * ~~~~~~~~~~~~~~~{.c}
- * php_resource_factory_t *create_my_rf(const char *persistent_id_str,
- *                                      size_t persistent_id_len TSRMLS_DC)
+ * php_resource_factory_t *create_my_rf(zend_string *persistent_id)
  * {
  *     php_resource_factory_t *rf;
  *
- *     if (persistent_id_str) {
+ *     if (persistent_id) {
  *         php_persistent_handle_factory_t *pf;
  *         php_resource_factory_ops_t *ops;
+ *         zend_string *ns = zend_string_init("my", 2, 1);
  *
  *         ops = php_persistent_handle_get_resource_factory_ops();
- *
- *         pf = php_persistent_handle_concede(NULL, "my", 2,
- *             persistent_id_str, persistent_id_len, NULL, NULL TSRMLS_CC);
- *
+ *         pf = php_persistent_handle_concede(NULL, ns, persistent_id, NULL, NULL);
  *         rf = php_resource_factory_init(NULL, ops, pf, php_persistent_handle_abandon);
+ *         zend_string_release(ns);
  *     } else {
  *         rf = php_resource_factory_init(NULL, &myops, NULL, NULL);
  *     }
@@ -373,29 +363,27 @@ php_persistent_handle_get_resource_factory_ops(void);
 /**
  * Clean persistent handles up.
  *
- * Destroy persistent handles of provider \a name_str and in subsidiary
- * namespace \a ident_str.
+ * Destroy persistent handles of provider \a name and in subsidiary
+ * namespace \a ident.
  *
- * If \a name_str is NULL, all persistent handles of all providers with a
- * matching \a ident_str will be cleaned up.
+ * If \a name is NULL, all persistent handles of all providers with a
+ * matching \a ident will be cleaned up.
  *
- * If \a ident_str is NULL all persistent handles of the provider will be
+ * If \a identr is NULL all persistent handles of the provider will be
  * cleaned up.
  *
- * Ergo, if both, \a name_str and \a ident_str are NULL, then all
+ * Ergo, if both, \a name and \a ident are NULL, then all
  * persistent handles will be cleaned up.
  *
  * You must call this in MSHUTDOWN, if your resource factory ops hold a
  * registered php_resource_factory::dtor, else the dtor will point to
  * memory not any more available if the extension has already been unloaded.
  *
- * @param name_str the provider name; may be NULL
- * @param name_len the provider name length
- * @param ident_str the subsidiary namespace name; may be NULL
- * @param ident_len the subsidiary namespace name length
+ * @param name the provider name; may be NULL
+ * @param ident the subsidiary namespace name; may be NULL
  */
-PHP_RAPHF_API void php_persistent_handle_cleanup(const char *name_str,
-		size_t name_len, const char *ident_str, size_t ident_len);
+PHP_RAPHF_API void php_persistent_handle_cleanup(zend_string *name,
+		zend_string *ident);
 
 /**
  * Retrieve statistics about the current process/thread's persistent handles.

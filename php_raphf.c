@@ -230,14 +230,12 @@ static int php_persistent_handle_list_apply_dtor(zval *p, void *provider)
 }
 
 static inline php_persistent_handle_list_t *php_persistent_handle_list_find(
-		php_persistent_handle_provider_t *provider, const char *ident_str,
-		size_t ident_len)
+		php_persistent_handle_provider_t *provider, zend_string *ident)
 {
 	php_persistent_handle_list_t *list;
+	zval *zlist = zend_symtable_find(&provider->list.free, ident);
 
-	list = zend_symtable_str_find_ptr(&provider->list.free, ident_str, ident_len);
-
-	if (list) {
+	if (zlist && (list = Z_PTR_P(zlist))) {
 #if PHP_RAPHF_DEBUG_PHANDLES
 		fprintf(stderr, "LSTFIND: %p\n", list);
 #endif
@@ -248,8 +246,7 @@ static inline php_persistent_handle_list_t *php_persistent_handle_list_find(
 		zval p;
 
 		ZVAL_PTR(&p, list);
-		if (zend_symtable_str_update(&provider->list.free, ident_str, ident_len,
-				&p)) {
+		if (zend_symtable_update(&provider->list.free, ident, &p)) {
 #if PHP_RAPHF_DEBUG_PHANDLES
 			fprintf(stderr, "LSTFIND: %p (new)\n", list);
 #endif
@@ -265,13 +262,11 @@ static int php_persistent_handle_apply_cleanup_all(zval *p, int argc,
 		va_list argv, zend_hash_key *key)
 {
 	php_persistent_handle_provider_t *provider = Z_PTR_P(p);
-	const char *ident_str = va_arg(argv, const char *);
-	size_t ident_len = va_arg(argv, size_t);
+	zend_string *ident = va_arg(argv, zend_string *);
 	php_persistent_handle_list_t *list;
 
-	if (ident_str && ident_len) {
-		if ((list = php_persistent_handle_list_find(provider, ident_str,
-				ident_len))) {
+	if (ident && ident->len) {
+		if ((list = php_persistent_handle_list_find(provider, ident))) {
 			zend_hash_apply_with_argument(&list->free,
 					php_persistent_handle_apply_cleanup_ex,
 					&provider->rf);
@@ -295,23 +290,31 @@ static void php_persistent_handle_hash_dtor(zval *p)
 	pefree(provider, 1);
 }
 
-ZEND_RESULT_CODE php_persistent_handle_provide(const char *name_str,
-		size_t name_len, php_resource_factory_ops_t *fops, void *data,
-		void (*dtor)(void *))
+ZEND_RESULT_CODE php_persistent_handle_provide(zend_string *name,
+		php_resource_factory_ops_t *fops, void *data, void (*dtor)(void *))
 {
 	php_persistent_handle_provider_t *provider = pemalloc(sizeof(*provider), 1);
 
 	if (php_persistent_handle_list_init(&provider->list)) {
 		if (php_resource_factory_init(&provider->rf, fops, data, dtor)) {
-			zval p;
+			zval p, *rv;
+			zend_string *ns;
 
 #if PHP_RAPHF_DEBUG_PHANDLES
 			fprintf(stderr, "PROVIDE: %p %s\n", PHP_RAPHF_G, name_str);
 #endif
 
 			ZVAL_PTR(&p, provider);
-			if (zend_symtable_str_update(&PHP_RAPHF_G->persistent_handle.hash,
-					name_str, name_len, &p)) {
+			if ((GC_FLAGS(name) & IS_STR_PERSISTENT)) {
+				ns = name;
+			} else {
+				ns = zend_string_dup(name, 1);
+			}
+			rv = zend_symtable_update(&PHP_RAPHF_G->persistent_handle.hash, ns, &p);
+			if (ns != name) {
+				zend_string_release(ns);
+			}
+			if (rv) {
 				return SUCCESS;
 			}
 			php_resource_factory_dtor(&provider->rf);
@@ -323,41 +326,33 @@ ZEND_RESULT_CODE php_persistent_handle_provide(const char *name_str,
 
 
 php_persistent_handle_factory_t *php_persistent_handle_concede(
-		php_persistent_handle_factory_t *a, const char *name_str,
-		size_t name_len, const char *ident_str, size_t ident_len,
+		php_persistent_handle_factory_t *a,
+		zend_string *name, zend_string *ident,
 		php_persistent_handle_wakeup_t wakeup,
 		php_persistent_handle_retire_t retire)
 {
-	php_persistent_handle_factory_t *free_a = NULL;
+	zval *zprovider = zend_symtable_find(&PHP_RAPHF_G->persistent_handle.hash, name);
 
-	if (!a) {
-		free_a = a = emalloc(sizeof(*a));
-	}
-	memset(a, 0, sizeof(*a));
+	if (zprovider) {
+		zend_bool free_a = 0;
 
-	a->provider = zend_symtable_str_find_ptr(&PHP_RAPHF_G->persistent_handle.hash,
-			name_str, name_len);
+		if ((free_a = !a)) {
+			a = emalloc(sizeof(*a));
+		}
+		memset(a, 0, sizeof(*a));
 
-	if (a->provider) {
-		a->ident.str = estrndup(ident_str, ident_len);
-		a->ident.len = ident_len;
-
+		a->provider = Z_PTR_P(zprovider);
+		a->ident = zend_string_copy(ident);
 		a->wakeup = wakeup;
 		a->retire = retire;
-
-		if (free_a) {
-			a->free_on_abandon = 1;
-		}
+		a->free_on_abandon = free_a;
 	} else {
-		if (free_a) {
-			efree(free_a);
-		}
 		a = NULL;
 	}
 
 #if PHP_RAPHF_DEBUG_PHANDLES
 	fprintf(stderr, "CONCEDE: %p %p (%s) (%s)\n", PHP_RAPHF_G,
-			a ? a->provider : NULL, name_str, ident_str);
+			a ? a->provider : NULL, name->val, ident->val);
 #endif
 
 	return a;
@@ -371,9 +366,7 @@ void php_persistent_handle_abandon(php_persistent_handle_factory_t *a)
 	fprintf(stderr, "ABANDON: %p\n", a->provider);
 #endif
 
-	if (a->ident.str) {
-		efree(a->ident.str);
-	}
+	zend_string_release(a->ident);
 	memset(a, 0, sizeof(*a));
 	if (f) {
 		efree(a);
@@ -388,7 +381,7 @@ void *php_persistent_handle_acquire(php_persistent_handle_factory_t *a, void *in
 	void *handle = NULL;
 	php_persistent_handle_list_t *list;
 
-	list = php_persistent_handle_list_find(a->provider, a->ident.str, a->ident.len);
+	list = php_persistent_handle_list_find(a->provider, a->ident);
 	if (list) {
 		zend_hash_internal_pointer_end(&list->free);
 		key = zend_hash_get_current_key(&list->free, NULL, &index);
@@ -421,7 +414,7 @@ void *php_persistent_handle_accrete(php_persistent_handle_factory_t *a, void *ha
 
 	new_handle = php_resource_factory_handle_copy(&a->provider->rf, handle);
 	if (handle) {
-		list = php_persistent_handle_list_find(a->provider, a->ident.str, a->ident.len);
+		list = php_persistent_handle_list_find(a->provider, a->ident);
 		if (list) {
 			++list->used;
 		}
@@ -435,7 +428,7 @@ void php_persistent_handle_release(php_persistent_handle_factory_t *a, void *han
 {
 	php_persistent_handle_list_t *list;
 
-	list = php_persistent_handle_list_find(a->provider, a->ident.str, a->ident.len);
+	list = php_persistent_handle_list_find(a->provider, a->ident);
 	if (list) {
 		if (a->provider->list.used >= PHP_RAPHF_G->persistent_handle.limit) {
 #if PHP_RAPHF_DEBUG_PHANDLES
@@ -454,20 +447,18 @@ void php_persistent_handle_release(php_persistent_handle_factory_t *a, void *han
 	}
 }
 
-void php_persistent_handle_cleanup(const char *name_str, size_t name_len,
-		const char *ident_str, size_t ident_len)
+void php_persistent_handle_cleanup(zend_string *name, zend_string *ident)
 {
 	php_persistent_handle_provider_t *provider;
 	php_persistent_handle_list_t *list;
 
-	if (name_str && name_len) {
-		provider = zend_symtable_str_find_ptr(&PHP_RAPHF_G->persistent_handle.hash,
-				name_str, name_len);
+	if (name) {
+		zval *zprovider = zend_symtable_find(&PHP_RAPHF_G->persistent_handle.hash,
+				name);
 
-		if (provider) {
-			if (ident_str && ident_len) {
-				list = php_persistent_handle_list_find(provider, ident_str,
-						ident_len);
+		if (zprovider && (provider = Z_PTR_P(zprovider))) {
+			if (ident) {
+				list = php_persistent_handle_list_find(provider, ident);
 				if (list) {
 					zend_hash_apply_with_argument(&list->free,
 							php_persistent_handle_apply_cleanup_ex,
@@ -482,8 +473,7 @@ void php_persistent_handle_cleanup(const char *name_str, size_t name_len,
 	} else {
 		zend_hash_apply_with_arguments(
 				&PHP_RAPHF_G->persistent_handle.hash,
-				php_persistent_handle_apply_cleanup_all, 2, ident_str,
-				ident_len);
+				php_persistent_handle_apply_cleanup_all, 1, ident);
 	}
 }
 
@@ -535,12 +525,10 @@ ZEND_BEGIN_ARG_INFO_EX(ai_raphf_clean_persistent_handles, 0, 0, 0)
 ZEND_END_ARG_INFO();
 static PHP_FUNCTION(raphf_clean_persistent_handles)
 {
-	char *name_str = NULL, *ident_str = NULL;
-	int name_len = 0, ident_len = 0;
+	zend_string *name = NULL, *ident = NULL;
 
-	if (SUCCESS == zend_parse_parameters(ZEND_NUM_ARGS(), "|s!s!",
-			&name_str, &name_len, &ident_str, &ident_len)) {
-		php_persistent_handle_cleanup(name_str, name_len, ident_str, ident_len);
+	if (SUCCESS == zend_parse_parameters(ZEND_NUM_ARGS(), "|S!S!", &name, &ident)) {
+		php_persistent_handle_cleanup(name, ident);
 	}
 }
 
