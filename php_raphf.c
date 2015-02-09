@@ -250,9 +250,9 @@ static inline php_persistent_handle_list_t *php_persistent_handle_list_find(
 		if ((GC_FLAGS(ident) & IS_STR_PERSISTENT)) {
 			id = ident;
 		} else {
-			ident = zend_string_dup(ident, 1);
+			id = zend_string_dup(ident, 1);
 		}
-		rv = zend_symtable_update(&provider->list.free, ident, &p);
+		rv = zend_symtable_update(&provider->list.free, id, &p);
 		if (id != ident) {
 			zend_string_release(id);
 		}
