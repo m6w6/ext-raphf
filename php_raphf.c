@@ -243,10 +243,21 @@ static inline php_persistent_handle_list_t *php_persistent_handle_list_find(
 	}
 
 	if ((list = php_persistent_handle_list_init(NULL))) {
-		zval p;
+		zval p, *rv;
+		zend_string *id;
 
 		ZVAL_PTR(&p, list);
-		if (zend_symtable_update(&provider->list.free, ident, &p)) {
+		if ((GC_FLAGS(ident) & IS_STR_PERSISTENT)) {
+			id = ident;
+		} else {
+			ident = zend_string_dup(ident, 1);
+		}
+		rv = zend_symtable_update(&provider->list.free, ident, &p);
+		if (id != ident) {
+			zend_string_release(id);
+		}
+
+		if (rv) {
 #if PHP_RAPHF_DEBUG_PHANDLES
 			fprintf(stderr, "LSTFIND: %p (new)\n", list);
 #endif
