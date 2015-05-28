@@ -37,7 +37,12 @@ ZEND_END_MODULE_GLOBALS(raphf)
 
 ZEND_DECLARE_MODULE_GLOBALS(raphf)
 
-typedef int STATUS;
+#if PHP_VERSION_ID < 50500
+typedef enum {
+	SUCCESS = 0,
+	FAILURE = -1
+} ZEND_RESULT_CODE;
+#endif
 
 #ifndef PHP_RAPHF_DEBUG_PHANDLES
 #	define PHP_RAPHF_DEBUG_PHANDLES 0
@@ -240,7 +245,7 @@ static inline php_persistent_handle_list_t *php_persistent_handle_list_find(
 		size_t ident_len TSRMLS_DC)
 {
 	php_persistent_handle_list_t **list, *new_list;
-	STATUS rv = zend_symtable_find(&provider->list.free, ident_str,
+	ZEND_RESULT_CODE rv = zend_symtable_find(&provider->list.free, ident_str,
 			ident_len + 1, (void *) &list);
 
 	if (SUCCESS == rv) {
@@ -301,11 +306,11 @@ static void php_persistent_handle_hash_dtor(void *p)
 	php_resource_factory_dtor(&provider->rf);
 }
 
-PHP_RAPHF_API STATUS php_persistent_handle_provide(const char *name_str,
+PHP_RAPHF_API ZEND_RESULT_CODE php_persistent_handle_provide(const char *name_str,
 		size_t name_len, php_resource_factory_ops_t *fops, void *data,
 		void (*dtor)(void *) TSRMLS_DC)
 {
-	STATUS status = FAILURE;
+	ZEND_RESULT_CODE status = FAILURE;
 	php_persistent_handle_provider_t provider;
 
 	if (php_persistent_handle_list_init(&provider.list)) {
@@ -332,7 +337,7 @@ php_persistent_handle_factory_t *php_persistent_handle_concede(
 		php_persistent_handle_wakeup_t wakeup,
 		php_persistent_handle_retire_t retire TSRMLS_DC)
 {
-	STATUS status = FAILURE;
+	ZEND_RESULT_CODE status = FAILURE;
 	php_persistent_handle_factory_t *free_a = NULL;
 
 	if (!a) {
@@ -388,7 +393,7 @@ void *php_persistent_handle_acquire(
 		php_persistent_handle_factory_t *a, void *init_arg  TSRMLS_DC)
 {
 	int key;
-	STATUS rv;
+	ZEND_RESULT_CODE rv;
 	ulong index;
 	void **handle_ptr, *handle = NULL;
 	php_persistent_handle_list_t *list;
@@ -473,7 +478,7 @@ void php_persistent_handle_cleanup(const char *name_str, size_t name_len,
 {
 	php_persistent_handle_provider_t *provider;
 	php_persistent_handle_list_t *list;
-	STATUS rv;
+	ZEND_RESULT_CODE rv;
 
 	if (name_str && name_len) {
 		rv = zend_symtable_find(&PHP_RAPHF_G->persistent_handle.hash, name_str,
