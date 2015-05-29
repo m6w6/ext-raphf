@@ -1,6 +1,0 @@
-<map id="php_persistent_handle_factory" name="php_persistent_handle_factory">
-<area shape="rect" id="node2" href="$php__raphf_8h.html#structphp__persistent__handle__provider" title="Definition of a persistent handle provider. " alt="" coords="76,187,228,229"/>
-<area shape="rect" id="node3" href="$php__raphf_8h.html#structphp__persistent__handle__list" title="Persistent handles storage. " alt="" coords="5,96,181,123"/>
-<area shape="rect" id="node4" href="$structphp__resource__factory.html" title="The resource factory. " alt="" coords="205,96,352,123"/>
-<area shape="rect" id="node5" href="$php__raphf_8h.html#structphp__resource__factory__ops" title="The resource ops consisting of a ctor, a copy ctor and a dtor. " alt="" coords="191,5,365,32"/>
-</map>
