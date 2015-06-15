@@ -247,15 +247,9 @@ static inline php_persistent_handle_list_t *php_persistent_handle_list_find(
 		zend_string *id;
 
 		ZVAL_PTR(&p, list);
-		if ((GC_FLAGS(ident) & IS_STR_PERSISTENT)) {
-			id = ident;
-		} else {
-			id = zend_string_dup(ident, 1);
-		}
+		id = zend_string_init(ident->val, ident->len, 1);
 		rv = zend_symtable_update(&provider->list.free, id, &p);
-		if (id != ident) {
-			zend_string_release(id);
-		}
+		zend_string_release(id);
 
 		if (rv) {
 #if PHP_RAPHF_DEBUG_PHANDLES
@@ -316,15 +310,10 @@ ZEND_RESULT_CODE php_persistent_handle_provide(zend_string *name,
 #endif
 
 			ZVAL_PTR(&p, provider);
-			if ((GC_FLAGS(name) & IS_STR_PERSISTENT)) {
-				ns = name;
-			} else {
-				ns = zend_string_dup(name, 1);
-			}
+			ns = zend_string_init(name->val, name->len, 1);
 			rv = zend_symtable_update(&PHP_RAPHF_G->persistent_handle.hash, ns, &p);
-			if (ns != name) {
-				zend_string_release(ns);
-			}
+			zend_string_release(ns);
+
 			if (rv) {
 				return SUCCESS;
 			}
