@@ -360,6 +360,13 @@ PHP_RAPHF_API void *php_persistent_handle_accrete(
 PHP_RAPHF_API php_resource_factory_ops_t *
 php_persistent_handle_get_resource_factory_ops(void);
 
+PHP_RAPHF_API php_resource_factory_t *
+php_persistent_handle_resource_factory_init(php_resource_factory_t *a,
+		php_persistent_handle_factory_t *pf);
+
+PHP_RAPHF_API zend_bool php_resource_factory_is_persistent(
+		php_resource_factory_t *a);
+
 /**
  * Clean persistent handles up.
  *
