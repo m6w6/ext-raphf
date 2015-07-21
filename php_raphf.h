@@ -348,7 +348,7 @@ PHP_RAPHF_API void *php_persistent_handle_accrete(
  *
  *         ops = php_persistent_handle_get_resource_factory_ops();
  *         pf = php_persistent_handle_concede(NULL, ns, persistent_id, NULL, NULL);
- *         rf = php_resource_factory_init(NULL, ops, pf, php_persistent_handle_abandon);
+ *         rf = php_persistent_handle_resource_factory_init(NULL, pf);
  *         zend_string_release(ns);
  *     } else {
  *         rf = php_resource_factory_init(NULL, &myops, NULL, NULL);
@@ -360,10 +360,24 @@ PHP_RAPHF_API void *php_persistent_handle_accrete(
 PHP_RAPHF_API php_resource_factory_ops_t *
 php_persistent_handle_get_resource_factory_ops(void);
 
+/**
+ * Create a resource factory for persistent handles.
+ *
+ * This will create a resource factory with persistent handle ops, which wraps
+ * the provided reource factory \a pf.
+ *
+ * @param a the persistent handle resource factory to initialize
+ * @param pf the resource factory to wrap
+ */
 PHP_RAPHF_API php_resource_factory_t *
 php_persistent_handle_resource_factory_init(php_resource_factory_t *a,
 		php_persistent_handle_factory_t *pf);
 
+/**
+ * Check whether a resource factory is a persistent handle resource factory.
+ *
+ * @param a the resource factory to check
+ */
 PHP_RAPHF_API zend_bool php_resource_factory_is_persistent(
 		php_resource_factory_t *a);
 
