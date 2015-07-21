@@ -125,6 +125,20 @@ void php_resource_factory_handle_dtor(php_resource_factory_t *f,
 	}
 }
 
+php_resource_factory_t *php_persistent_handle_resource_factory_init(
+		php_resource_factory_t *a, php_persistent_handle_factory_t *pf)
+{
+	return php_resource_factory_init(a,
+			php_persistent_handle_get_resource_factory_ops(), pf,
+			(void(*)(void*)) php_persistent_handle_abandon);
+}
+
+zend_bool php_resource_factory_is_persistent(php_resource_factory_t *a)
+{
+	return a->dtor == (void(*)(void *)) php_persistent_handle_abandon;
+}
+
+
 static inline php_persistent_handle_list_t *php_persistent_handle_list_init(
 		php_persistent_handle_list_t *list)
 {

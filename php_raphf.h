@@ -18,7 +18,7 @@
 extern zend_module_entry raphf_module_entry;
 #define phpext_raphf_ptr &raphf_module_entry
 
-#define PHP_RAPHF_VERSION "1.0.4"
+#define PHP_RAPHF_VERSION "1.1.0"
 
 #ifdef PHP_WIN32
 #	define PHP_RAPHF_API __declspec(dllexport)
@@ -362,7 +362,7 @@ PHP_RAPHF_API void *php_persistent_handle_accrete(
  *         pf = php_persistent_handle_concede(NULL, "my", 2,
  *             persistent_id_str, persistent_id_len, NULL, NULL TSRMLS_CC);
  *
- *         rf = php_resource_factory_init(NULL, ops, pf, php_persistent_handle_abandon);
+ *         rf = php_persistent_handle_resource_factory_init(NULL, pf);
  *     } else {
  *         rf = php_resource_factory_init(NULL, &myops, NULL, NULL);
  *     }
@@ -372,6 +372,27 @@ PHP_RAPHF_API void *php_persistent_handle_accrete(
  */
 PHP_RAPHF_API php_resource_factory_ops_t *
 php_persistent_handle_get_resource_factory_ops(void);
+
+/**
+ * Create a resource factory for persistent handles.
+ *
+ * This will create a resource factory with persistent handle ops, which wraps
+ * the provided reource factory \a pf.
+ *
+ * @param a the persistent handle resource factory to initialize
+ * @param pf the resource factory to wrap
+ */
+PHP_RAPHF_API php_resource_factory_t *
+php_persistent_handle_resource_factory_init(php_resource_factory_t *a,
+		php_persistent_handle_factory_t *pf);
+
+/**
+ * Check whether a resource factory is a persistent handle resource factory.
+ *
+ * @param a the resource factory to check
+ */
+PHP_RAPHF_API zend_bool php_resource_factory_is_persistent(
+		php_resource_factory_t *a);
 
 /**
  * Clean persistent handles up.

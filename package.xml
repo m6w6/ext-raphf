@@ -19,9 +19,9 @@ http://pear.php.net/dtd/package-2.0.xsd">
   <email>mike@php.net</email>
   <active>yes</active>
  </lead>
- <date>2013-12-04</date>
+ <date>2015-07-21</date>
  <version>
-  <release>1.0.5</release>
+  <release>1.1.0</release>
   <api>1.0.0</api>
  </version>
  <stability>
@@ -30,7 +30,8 @@ http://pear.php.net/dtd/package-2.0.xsd">
  </stability>
  <license>BSD, revised</license>
  <notes><![CDATA[
-* Source code documentation available at http://php.github.io/pecl-php-raphf
+* Fixed php module dependency check with RTLD_LAZY
++ Source code documentation available at http://m6w6.github.io/ext-raphf
 ]]></notes>
  <contents>
   <dir name="/">
@@ -60,8 +61,6 @@ http://pear.php.net/dtd/package-2.0.xsd">
   </required>
  </dependencies>
  <providesextension>raphf</providesextension>
- <extsrcrelease>
-  <configureoption default="yes" name="enable-raphf" prompt="whether to enable raphf support" />
- </extsrcrelease>
+ <extsrcrelease/>
 </package>
 
