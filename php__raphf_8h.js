@@ -28,11 +28,11 @@ var php__raphf_8h =
     [ "php_persistent_handle_factory_t", "php__raphf_8h.html#a833eaa62ffcc217e5749c26c18885b17", null ],
     [ "php_persistent_handle_list_t", "php__raphf_8h.html#a07f599598d2b87b188f39871d026c177", null ],
     [ "php_persistent_handle_provider_t", "php__raphf_8h.html#a31f0595f4f726f762790cef844568fc4", null ],
-    [ "php_persistent_handle_retire_t", "php__raphf_8h.html#a8f7d6389c67478ca0b99729a5dd3d305", null ],
-    [ "php_persistent_handle_wakeup_t", "php__raphf_8h.html#a681ca1f7c1249199b45270be60c721c6", null ],
-    [ "php_resource_factory_handle_copy_t", "php__raphf_8h.html#a80169af0f2adacf3ec7c7ee1dfb19f96", null ],
-    [ "php_resource_factory_handle_ctor_t", "php__raphf_8h.html#a1c5d952a60130d2a68c8d68db2bebbd8", null ],
-    [ "php_resource_factory_handle_dtor_t", "php__raphf_8h.html#a472a7e1909aed64d00d43ea5c112b854", null ],
+    [ "php_persistent_handle_retire_t", "php__raphf_8h.html#a85e9e715d308dc5d98b980c9c57d02bf", null ],
+    [ "php_persistent_handle_wakeup_t", "php__raphf_8h.html#a59f5566ecc4c76e048ad53469eb20142", null ],
+    [ "php_resource_factory_handle_copy_t", "php__raphf_8h.html#a23b073aa7b8b7dd182b336b07494288f", null ],
+    [ "php_resource_factory_handle_ctor_t", "php__raphf_8h.html#abadff49d810f7ce220bd3537bdaecef7", null ],
+    [ "php_resource_factory_handle_dtor_t", "php__raphf_8h.html#a1b826c765392c93336db79bd6697e33d", null ],
     [ "php_resource_factory_ops_t", "php__raphf_8h.html#a29e0d7a66e441a5265ddf2f0adbbb3af", null ],
     [ "php_resource_factory_t", "php__raphf_8h.html#a4817c4b3d4077c48dff36376487ba8d4", null ],
     [ "php_persistent_handle_abandon", "php__raphf_8h.html#ab12ec2da7189e16fbed40a3b73bc9ee2", null ],
@@ -43,6 +43,7 @@ var php__raphf_8h =
     [ "php_persistent_handle_get_resource_factory_ops", "php__raphf_8h.html#a93458ab12d810f0fd545fb1464ba9eca", null ],
     [ "php_persistent_handle_provide", "php__raphf_8h.html#a3cbbe29c8a4ed9858c921c8ee539de59", null ],
     [ "php_persistent_handle_release", "php__raphf_8h.html#af08ee05c51d52200755d24f6f52df144", null ],
+    [ "php_persistent_handle_resource_factory_init", "php__raphf_8h.html#ab754f4d59dab5de0edf702a9ab2f4e03", null ],
     [ "php_persistent_handle_statall", "php__raphf_8h.html#ae174fbe124d4cb6010e218a68379bd18", null ],
     [ "php_resource_factory_addref", "php__raphf_8h.html#ae8be369197905047ffbd05c0ca80f245", null ],
     [ "php_resource_factory_dtor", "php__raphf_8h.html#a016b8a4159e698f915ab967711696847", null ],
@@ -50,5 +51,6 @@ var php__raphf_8h =
     [ "php_resource_factory_handle_copy", "php__raphf_8h.html#a08db5f3698f2d0bf3d2f20dcf4e7b2b4", null ],
     [ "php_resource_factory_handle_ctor", "php__raphf_8h.html#a98d02dc80dd83095b8f901954350840c", null ],
     [ "php_resource_factory_handle_dtor", "php__raphf_8h.html#a97dbb9d342f33205b92374c586676bc6", null ],
-    [ "php_resource_factory_init", "php__raphf_8h.html#ad20f10c53e3f33756638da98819367f0", null ]
+    [ "php_resource_factory_init", "php__raphf_8h.html#ad20f10c53e3f33756638da98819367f0", null ],
+    [ "php_resource_factory_is_persistent", "php__raphf_8h.html#a617d2cc656ab6427388b938597194ebb", null ]
 ];
