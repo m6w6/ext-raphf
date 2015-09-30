@@ -1,0 +1,5 @@
+<map id="php_persistent_handle_resource_factory_init" name="php_persistent_handle_resource_factory_init">
+<area shape="rect" id="node2" href="$php__raphf__api_8c.html#ad20f10c53e3f33756638da98819367f0" title="Initialize a resource factory. " alt="" coords="209,5,380,32"/>
+<area shape="rect" id="node3" href="$php__raphf__api_8c.html#a93458ab12d810f0fd545fb1464ba9eca" title="Retrieve persistent handle resource factory ops. " alt="" coords="205,57,384,98"/>
+<area shape="rect" id="node4" href="$php__raphf__api_8c.html#ab12ec2da7189e16fbed40a3b73bc9ee2" title="Abandon the persistent handle factory. " alt="" coords="219,122,371,163"/>
+</map>
