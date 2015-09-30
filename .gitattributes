@@ -1,2 +1,3 @@
 package.xml		merge=touch
 php_raphf.h		merge=touch
+config.w32		eol=crlf

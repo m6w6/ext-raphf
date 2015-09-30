@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<package 
- packagerversion="1.4.11" 
- version="2.0" 
- xmlns="http://pear.php.net/dtd/package-2.0" 
- xmlns:tasks="http://pear.php.net/dtd/tasks-1.0" 
- xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+<package
+ packagerversion="1.4.11"
+ version="2.0"
+ xmlns="http://pear.php.net/dtd/package-2.0"
+ xmlns:tasks="http://pear.php.net/dtd/tasks-1.0"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
  xsi:schemaLocation="http://pear.php.net/dtd/tasks-1.0
 http://pear.php.net/dtd/tasks-1.0.xsd
 http://pear.php.net/dtd/package-2.0
@@ -35,14 +35,24 @@ http://pear.php.net/dtd/package-2.0.xsd">
 ]]></notes>
  <contents>
   <dir name="/">
-   <file role="doc" name="CREDITS" />
-   <file role="doc" name="LICENSE" />
-   <file role="doc" name="Doxyfile" />
-   <file role="src" name="config.m4" />
-   <file role="src" name="config.w32" />
-   <file role="src" name="php_raphf.h" />
-   <file role="src" name="php_raphf_api.h" />
-   <file role="src" name="php_raphf.c" />
+   <file role="doc" name="AUTHORS"/>
+   <file role="doc" name="BUGS"/>
+   <file role="doc" name="CONTRIBUTING.md"/>
+   <file role="doc" name="CREDITS"/>
+   <file role="doc" name="LICENSE"/>
+   <file role="doc" name="README.md"/>
+   <file role="doc" name="THANKS"/>
+   <file role="doc" name="TODO"/>
+   <file role="doc" name="Doxyfile"/>
+   <file role="src" name="config.m4"/>
+   <file role="src" name="config0.m4"/>
+   <file role="src" name="config.w32"/>
+   <file role="src" name="Makefile.frag"/>
+   <file role="src" name="php_raphf.h"/>
+   <dir name="src">
+    <file role="src" name="php_raphf_api.h"/>
+    <file role="src" name="php_raphf_api.c"/>
+   </dir>
    <dir name="tests">
     <file role="test" name="http001.phpt" />
     <file role="test" name="http002.phpt" />
