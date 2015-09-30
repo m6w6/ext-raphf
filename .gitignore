@@ -25,3 +25,4 @@ run-tests.php
 /.project
 .libs/
 /php_raphf_api.h
+Doxyfile.bak

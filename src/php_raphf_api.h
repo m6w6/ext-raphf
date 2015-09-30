@@ -326,7 +326,7 @@ PHP_RAPHF_API void *php_persistent_handle_accrete(
  * ressources.
  *
  * Example:
- * ~~~~~~~~~~~~~~~{.c}
+ * \code{.c}
  * php_resource_factory_t *create_my_rf(const char *persistent_id_str,
  *                                      size_t persistent_id_len TSRMLS_DC)
  * {
@@ -347,7 +347,7 @@ PHP_RAPHF_API void *php_persistent_handle_accrete(
  *     }
  *     return rf;
  * }
- * ~~~~~~~~~~~~~~~
+ * \endcode
  */
 PHP_RAPHF_API php_resource_factory_ops_t *
 php_persistent_handle_get_resource_factory_ops(void);
@@ -404,7 +404,7 @@ PHP_RAPHF_API void php_persistent_handle_cleanup(const char *name_str,
  * Retrieve statistics about the current process/thread's persistent handles.
  *
  * @return a HashTable like:
- * ~~~~~~~~~~~~~~~
+ * \code
  *     [
  *         "name" => [
  *             "ident" => [
@@ -413,7 +413,7 @@ PHP_RAPHF_API void php_persistent_handle_cleanup(const char *name_str,
  *             ]
  *         ]
  *     ]
- * ~~~~~~~~~~~~~~~
+ * \endcode
  */
 PHP_RAPHF_API HashTable *php_persistent_handle_statall(HashTable *ht TSRMLS_DC);
 
