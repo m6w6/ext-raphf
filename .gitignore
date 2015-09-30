@@ -26,3 +26,4 @@ run-tests.php
 .libs/
 /php_raphf_api.h
 Doxyfile.bak
+!/Makefile.frag
