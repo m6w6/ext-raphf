@@ -53,6 +53,9 @@ http://pear.php.net/dtd/package-2.0.xsd">
     <file role="src" name="php_raphf_api.h"/>
     <file role="src" name="php_raphf_api.c"/>
    </dir>
+   <dir name="scripts">
+    <file role="src" name="gen_travis_yml.php"/>
+   </dir>
    <dir name="tests">
     <file role="test" name="http001.phpt" />
     <file role="test" name="http002.phpt" />
