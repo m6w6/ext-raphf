@@ -3,8 +3,8 @@
 *~
 /*.tgz
 /.deps
-/*.lo
-/*.la
+*.lo
+*.la
 /config.[^mw]*
 /configure*
 /lib*
@@ -21,3 +21,8 @@
 /autom4te*
 /.dep.inc
 run-tests.php
+/.cproject
+/.project
+.libs/
+/php_raphf_api.h
+Doxyfile.bak
