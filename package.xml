@@ -19,18 +19,20 @@ http://pear.php.net/dtd/package-2.0.xsd">
   <email>mike@php.net</email>
   <active>yes</active>
  </lead>
- <date>2015-07-28</date>
+ <date>2015-12-01</date>
  <version>
-  <release>2.0.0dev</release>
+  <release>2.0.0RC1</release>
   <api>2.0.0</api>
  </version>
  <stability>
-  <release>stable</release>
+  <release>beta</release>
   <api>stable</api>
  </stability>
  <license>BSD, revised</license>
  <notes><![CDATA[
-PHP 7 compatible release with the following backwards compatibility breaks:
+* Internals documentation available at http://m6w6.github.io/ext-raphf/master/
+* Travis support
+* PHP 7 compatible version
 ]]></notes>
  <contents>
   <dir name="/">
