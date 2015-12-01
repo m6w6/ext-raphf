@@ -19,19 +19,20 @@ http://pear.php.net/dtd/package-2.0.xsd">
   <email>mike@php.net</email>
   <active>yes</active>
  </lead>
- <date>2015-07-28</date>
+ <date>2015-12-01</date>
  <version>
-  <release>1.1.0</release>
+  <release>1.1.1RC1</release>
   <api>1.0.0</api>
  </version>
  <stability>
-  <release>stable</release>
+  <release>beta</release>
   <api>stable</api>
  </stability>
  <license>BSD, revised</license>
  <notes><![CDATA[
-* Fixed php module dependency check with RTLD_LAZY
-+ Source code documentation available at http://m6w6.github.io/ext-raphf
+* Source code documentation available at http://m6w6.github.io/ext-raphf/v1.1.x
+* Travis support
+* Fix package.xml's maximum and minimum PHP version
 ]]></notes>
  <contents>
   <dir name="/">
@@ -79,4 +80,3 @@ http://pear.php.net/dtd/package-2.0.xsd">
  <providesextension>raphf</providesextension>
  <extsrcrelease/>
 </package>
-
