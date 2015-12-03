@@ -5,7 +5,7 @@ PHP_RAPHF_HEADERS := $(addprefix $(PHP_RAPHF_BUILDDIR)/,$(PHP_RAPHF_HEADERS))
 $(PHP_RAPHF_BUILDDIR)/%.h: $(PHP_RAPHF_SRCDIR)/src/%.h
 	@cat >$@ <$<
 
-all: raphf-build-headers
+$(all_targets): raphf-build-headers
 clean: raphf-clean-headers
 
 .PHONY: raphf-build-headers
