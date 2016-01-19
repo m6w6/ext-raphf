@@ -21,7 +21,7 @@ http://pear.php.net/dtd/package-2.0.xsd">
  </lead>
  <date>2016-01-19</date>
  <version>
-  <release>1.1.2</release>
+  <release>1.1.3dev</release>
   <api>1.0.0</api>
  </version>
  <stability>
@@ -30,7 +30,7 @@ http://pear.php.net/dtd/package-2.0.xsd">
  </stability>
  <license>BSD, revised</license>
  <notes><![CDATA[
-* Fixed release stability to stable
+
 ]]></notes>
  <contents>
   <dir name="/">
