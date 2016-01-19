@@ -30,7 +30,7 @@ http://pear.php.net/dtd/package-2.0.xsd">
  </stability>
  <license>BSD, revised</license>
  <notes><![CDATA[
-
+*
 ]]></notes>
  <contents>
   <dir name="/">
