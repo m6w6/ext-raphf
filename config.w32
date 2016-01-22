@@ -1,14 +1,21 @@
 ARG_ENABLE("raphf", "for raphf support", "no");
 
 if (PHP_RAPHF == "yes") {
-	var PHP_RAPHF_HEADERS=glob("src/*.h"), PHP_RAPHF_SOURCES=glob("src/*.c");
+	var PHP_RAPHF_HEADERS=glob(configure_module_dirname + "/src/*.h");
+	var PHP_RAPHF_SRC_ARRAY=glob(configure_module_dirname + "/src/*.c");
+	var PHP_RAPHF_SOURCES="";
+	for (var i=0; i<PHP_RAPHF_SRC_ARRAY.length; ++i) {
+		var basename = FSO.GetFileName(PHP_RAPHF_SRC_ARRAY[i]);
+		copy_and_subst("src/" + basename, basename, []);
+		PHP_RAPHF_SOURCES = PHP_RAPHF_SOURCES + " " + basename;
+	}
 
 	EXTENSION("raphf", PHP_RAPHF_SOURCES);
-	PHP_INSTALL_HEADERS("ext/raphf", "php_propro.h");
+	PHP_INSTALL_HEADERS(configure_module_dirname, "php_raphf.h");
 	for (var i=0; i<PHP_RAPHF_HEADERS.length; ++i) {
 		var basename = FSO.GetFileName(PHP_RAPHF_HEADERS[i]);
-		copy_and_subst(PHP_RAPHF_HEADERS[i], basename, []);
-		PHP_INSTALL_HEADERS("ext/raphf", basename);
+		copy_and_subst("src/" + basename, basename, []);
+		PHP_INSTALL_HEADERS(configure_module_dirname, basename);
 	}
 
 	AC_DEFINE("HAVE_RAPHF", 1);
