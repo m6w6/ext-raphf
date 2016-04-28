@@ -243,7 +243,8 @@ static int php_persistent_handle_list_apply_dtor(zval *p, void *provider)
 }
 
 static inline php_persistent_handle_list_t *php_persistent_handle_list_find(
-		php_persistent_handle_provider_t *provider, zend_string *ident)
+		php_persistent_handle_provider_t *provider, zend_string *ident,
+		zend_bool create)
 {
 	php_persistent_handle_list_t *list;
 	zval *zlist = zend_symtable_find(&provider->list.free, ident);
@@ -255,7 +256,7 @@ static inline php_persistent_handle_list_t *php_persistent_handle_list_find(
 		return list;
 	}
 
-	if ((list = php_persistent_handle_list_init(NULL))) {
+	if (create && (list = php_persistent_handle_list_init(NULL))) {
 		zval p, *rv;
 		zend_string *id;
 
@@ -284,7 +285,7 @@ static int php_persistent_handle_apply_cleanup_all(zval *p, int argc,
 	php_persistent_handle_list_t *list;
 
 	if (ident && ident->len) {
-		if ((list = php_persistent_handle_list_find(provider, ident))) {
+		if ((list = php_persistent_handle_list_find(provider, ident, 0))) {
 			zend_hash_apply_with_argument(&list->free,
 					php_persistent_handle_apply_cleanup_ex,
 					&provider->rf);
@@ -394,7 +395,7 @@ void *php_persistent_handle_acquire(php_persistent_handle_factory_t *a, void *in
 	void *handle = NULL;
 	php_persistent_handle_list_t *list;
 
-	list = php_persistent_handle_list_find(a->provider, a->ident);
+	list = php_persistent_handle_list_find(a->provider, a->ident, 1);
 	if (list) {
 		zend_hash_internal_pointer_end(&list->free);
 		key = zend_hash_get_current_key(&list->free, NULL, &index);
@@ -427,7 +428,7 @@ void *php_persistent_handle_accrete(php_persistent_handle_factory_t *a, void *ha
 
 	new_handle = php_resource_factory_handle_copy(&a->provider->rf, handle);
 	if (handle) {
-		list = php_persistent_handle_list_find(a->provider, a->ident);
+		list = php_persistent_handle_list_find(a->provider, a->ident, 1);
 		if (list) {
 			++list->used;
 		}
@@ -441,7 +442,7 @@ void php_persistent_handle_release(php_persistent_handle_factory_t *a, void *han
 {
 	php_persistent_handle_list_t *list;
 
-	list = php_persistent_handle_list_find(a->provider, a->ident);
+	list = php_persistent_handle_list_find(a->provider, a->ident, 1);
 	if (list) {
 		if (a->provider->list.used >= PHP_RAPHF_G->persistent_handle.limit) {
 #if PHP_RAPHF_DEBUG_PHANDLES
@@ -471,7 +472,7 @@ void php_persistent_handle_cleanup(zend_string *name, zend_string *ident)
 
 		if (zprovider && (provider = Z_PTR_P(zprovider))) {
 			if (ident) {
-				list = php_persistent_handle_list_find(provider, ident);
+				list = php_persistent_handle_list_find(provider, ident, 0);
 				if (list) {
 					zend_hash_apply_with_argument(&list->free,
 							php_persistent_handle_apply_cleanup_ex,

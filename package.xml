@@ -19,7 +19,7 @@ http://pear.php.net/dtd/package-2.0.xsd">
   <email>mike@php.net</email>
   <active>yes</active>
  </lead>
- <date>2016-01-19</date>
+ <date>2016-04-28</date>
  <version>
   <release>2.0.1dev</release>
   <api>2.0.0</api>
@@ -30,7 +30,7 @@ http://pear.php.net/dtd/package-2.0.xsd">
  </stability>
  <license>BSD, revised</license>
  <notes><![CDATA[
-*
+* Fixed pointless initialization of persistent handles lists on cleanup
 ]]></notes>
  <contents>
   <dir name="/">

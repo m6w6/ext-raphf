@@ -16,8 +16,8 @@ echo "Test\n";
 $h = (array) raphf\stat_persistent_handles();
 var_dump(array_intersect_key($h, array_flip(preg_grep("/^http/", array_keys($h)))));
 
-$c = new http\Client("curl", "php.net:80");
-$c2 = new http\Client("curl", "php.net:80");
+$c = new http\Client("curl", "PHP");
+$c2 = new http\Client("curl", "PHP");
 do {
 	$c->enqueue(new http\Client\Request("GET", "http://php.net"));
 	$c2->enqueue(new http\Client\Request("GET", "http://php.net"));
@@ -51,7 +51,7 @@ array(2) {
 array(2) {
   ["http\Client\Curl"]=>
   array(1) {
-    ["php.net:80"]=>
+    ["PHP"]=>
     array(2) {
       ["used"]=>
       int(2)
@@ -61,7 +61,7 @@ array(2) {
   }
   ["http\Client\Curl\Request"]=>
   array(1) {
-    ["php.net:80"]=>
+    ["PHP:php.net:80"]=>
     array(2) {
       ["used"]=>
       int(6)
@@ -73,7 +73,7 @@ array(2) {
 array(2) {
   ["http\Client\Curl"]=>
   array(1) {
-    ["php.net:80"]=>
+    ["PHP"]=>
     array(2) {
       ["used"]=>
       int(1)
@@ -83,7 +83,7 @@ array(2) {
   }
   ["http\Client\Curl\Request"]=>
   array(1) {
-    ["php.net:80"]=>
+    ["PHP:php.net:80"]=>
     array(2) {
       ["used"]=>
       int(3)
@@ -95,7 +95,7 @@ array(2) {
 array(2) {
   ["http\Client\Curl"]=>
   array(1) {
-    ["php.net:80"]=>
+    ["PHP"]=>
     array(2) {
       ["used"]=>
       int(1)
@@ -105,7 +105,7 @@ array(2) {
   }
   ["http\Client\Curl\Request"]=>
   array(1) {
-    ["php.net:80"]=>
+    ["PHP:php.net:80"]=>
     array(2) {
       ["used"]=>
       int(3)
