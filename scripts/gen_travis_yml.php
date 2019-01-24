@@ -10,17 +10,18 @@ addons:
    - php-pear
 
 env:
- matrix:
 <?php
 
 $gen = include "./travis/pecl/gen-matrix.php";
 $env = $gen([
-	"PHP" => ["7.0", "master"],
+	"PHP" => ["7.0", "7.1", "7.2", "7.3", "master"],
 	"enable_debug",
 	"enable_maintainer_zts",
 ]);
-foreach ($env as $e) {
-	printf("  - %s\n", $e);
+foreach ($env as $grp) {
+	foreach ($grp as $e) {
+		printf(" - %s\n", $e);
+	}
 }
 
 ?>
