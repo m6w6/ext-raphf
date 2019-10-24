@@ -24,7 +24,7 @@
 #endif
 
 struct php_persistent_handle_globals {
-	ulong limit;
+	unsigned long limit;
 	HashTable hash;
 };
 

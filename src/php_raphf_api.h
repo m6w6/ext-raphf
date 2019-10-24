@@ -150,7 +150,7 @@ typedef struct php_persistent_handle_list {
 	/** Storage of free resources */
 	HashTable free;
 	/** Count of acquired resources */
-	ulong used;
+	unsigned long used;
 } php_persistent_handle_list_t;
 
 /**
