@@ -19,18 +19,19 @@ http://pear.php.net/dtd/package-2.0.xsd">
   <email>mike@php.net</email>
   <active>yes</active>
  </lead>
- <date>2016-04-28</date>
+ <date>2019-10-25</date>
  <version>
-  <release>2.0.1dev</release>
+  <release>2.0.1</release>
   <api>2.0.0</api>
  </version>
  <stability>
   <release>stable</release>
   <api>stable</api>
  </stability>
- <license>BSD, revised</license>
+ <license uri="http://copyfree.org/content/standard/licenses/2bsd/license.txt">BSD-2-Clause</license>
  <notes><![CDATA[
 * Fixed pointless initialization of persistent handles lists on cleanup
+* Fixed Windows build (Jan Ehrhardt)
 ]]></notes>
  <contents>
   <dir name="/">
