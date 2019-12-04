@@ -13,10 +13,10 @@ addons:
 env:
 <?php
 
-$cur = "7.3";
+$cur = "7.4";
 $gen = include "./travis/pecl/gen-matrix.php";
 $env = $gen([
-	"PHP" => ["7.0", "7.1", "7.2", "7.4", "master"],
+	"PHP" => ["7.0", "7.1", "7.2", "7.3", "master"],
 	"enable_debug" => "yes",
 	"enable_maintainer_zts" => "yes",
 ], [
@@ -37,7 +37,7 @@ matrix:
  allow_failures:
 <?php
 $allow_failures = array_merge( ... array_map(function($a) {
-	return preg_grep('/^PHP=(master|7.4) /', $a);
+	return preg_grep('/^PHP=(master) /', $a);
 }, $env));
 foreach ($allow_failures as $e) {
 	printf("  - env: %s\n", $e);
