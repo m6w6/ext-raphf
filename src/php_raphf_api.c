@@ -624,7 +624,7 @@ static int php_persistent_handle_apply_info_ex(zval *p, int argc,
 	zend_hash_key *super_key = va_arg(argv, zend_hash_key *);
 	char used[21], free[21];
 
-	slprintf(used, sizeof(used), "%u", list->used);
+	slprintf(used, sizeof(used), "%lu", list->used);
 	slprintf(free, sizeof(free), "%d", zend_hash_num_elements(&list->free));
 
 	php_info_print_table_row(4, super_key->key->val, key->key->val, used, free);
