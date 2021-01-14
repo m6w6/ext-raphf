@@ -57,6 +57,11 @@ foreach ($job as $id => $env) {
       - name: Prepare
         run: |
           make -f scripts/ci/Makefile php || make -f scripts/ci/Makefile clean php
+      - name: Build
+        run: |
+          make -f scripts/ci/Makefile ext PECL=raphf
+      - name: Prepare Test
+        run: |
           if test -n "$PECLs"; then
             IFS=$','
             for pecl in $PECLs; do
@@ -64,10 +69,6 @@ foreach ($job as $id => $env) {
             done
             unset IFS
           fi
-
-      - name: Build
-        run: |
-          make -f scripts/ci/Makefile ext PECL=raphf
       - name: Test
         run: |
           make -f scripts/ci/Makefile test
