@@ -13,7 +13,7 @@ jobs:
       PHP: "7.0"
       enable_debug: "yes"
       enable_maintainer_zts: "yes"
-      PECLs: "pecl_http:http:3.2.4"
+      PECLs: "propro,pecl_http:http:3.2.4"
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
@@ -51,7 +51,7 @@ jobs:
       PHP: "7.1"
       enable_debug: "yes"
       enable_maintainer_zts: "yes"
-      PECLs: "pecl_http:http:3.2.4"
+      PECLs: "propro,pecl_http:http:3.2.4"
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
@@ -89,7 +89,7 @@ jobs:
       PHP: "7.2"
       enable_debug: "yes"
       enable_maintainer_zts: "yes"
-      PECLs: "pecl_http:http:3.2.4"
+      PECLs: "propro,pecl_http:http:3.2.4"
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
@@ -127,7 +127,7 @@ jobs:
       PHP: "7.3"
       enable_debug: "yes"
       enable_maintainer_zts: "yes"
-      PECLs: "pecl_http:http:3.2.4"
+      PECLs: "propro,pecl_http:http:3.2.4"
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
@@ -165,7 +165,7 @@ jobs:
       PHP: "7.4"
       enable_debug: "yes"
       enable_maintainer_zts: "yes"
-      PECLs: "pecl_http:http:3.2.4"
+      PECLs: "propro,pecl_http:http:3.2.4"
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2

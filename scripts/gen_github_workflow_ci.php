@@ -17,7 +17,7 @@ $job = $gen->github([
 	"PHP" => ["7.0", "7.1", "7.2", "7.3", "7.4"],
 	"enable_debug" => "yes",
 	"enable_maintainer_zts" => "yes",
-	"PECLs" => "pecl_http:http:3.2.4",
+	"PECLs" => "propro,pecl_http:http:3.2.4",
 ], 
 "master" => [
 	"PHP" => "master",
