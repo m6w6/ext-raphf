@@ -10,14 +10,14 @@ on:
 jobs:
 <?php
 
-$cur = "8.0";
+$cur = "8.4";
 $gen = include __DIR__ . "/ci/gen-matrix.php";
 $job = $gen->github([
 "old-matrix" => [
-	"PHP" => ["7.0", "7.1", "7.2", "7.3", "7.4"],
+	"PHP" => ["8.0", "8.1", "8.2", "8.3"],
 	"enable_debug" => "yes",
 	"enable_maintainer_zts" => "yes",
-	"PECLs" => "propro,pecl_http:http:3.2.4",
+	"PECLs" => "pecl_http:http:4.2.6",
 ], 
 "master" => [
 	"PHP" => "master",
@@ -29,7 +29,7 @@ $job = $gen->github([
 	"PHP" => $cur,
 	"enable_debug",
 	"enable_zts",
-	"PECLs" => "pecl_http:http:4.0.0",
+	"PECLs" => "pecl_http:http:4.2.6",
 ]]);
 foreach ($job as $id => $env) {
     printf("  %s:\n", $id);
@@ -42,7 +42,7 @@ foreach ($job as $id => $env) {
         printf("      %s: \"%s\"\n", $key, $val);
     }
 ?>
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v2
         with:
@@ -75,9 +75,7 @@ foreach ($job as $id => $env) {
 <?php if (isset($env["CFLAGS"]) && strpos($env["CFLAGS"], "--coverage") != false) : ?>
       - name: Coverage
         if: success()
-        run: |
-          cd src/.libs
-          bash <(curl -s https://codecov.io/bash) -X xcode -X coveragepy
+        uses: codecov/codecov-action@v5
 <?php endif; ?>
 
 <?php

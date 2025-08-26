@@ -1,7 +1,5 @@
 # ext-raphf
 
-[![Build Status](https://travis-ci.org/m6w6/ext-raphf.svg?branch=master)](https://travis-ci.org/m6w6/ext-raphf)
-
 The "Resource and Persistent Handle Factory" extension provides facilities to manage those in a convenient manner.
 
 ## Documentation
@@ -16,10 +14,9 @@ Known issues are listed in [BUGS](./BUGS) and future ideas can be found in [TODO
 
 	pecl install raphf
 
-### PHARext
+### PIE
 
-Watch out for [PECL replicates](https://replicator.pharext.org?raphf)
-and pharext packages attached to [releases](https://github.com/m6w6/ext-raphf/releases).
+    pie install m6w6/ext-raphf
 
 ### Checkout
 

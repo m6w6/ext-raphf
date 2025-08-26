@@ -1,0 +1,12 @@
+{
+    "name": "m6w6/ext-raphf",
+    "type": "php-ext",
+    "license": "BSD-2-Clause",
+    "description": "Resource and Persistent Handle Factory (internal)",
+    "require": {
+        "php": ">= 7.0.0"
+    },
+    "php-ext": {
+        "extension-name": "raphf"
+    }
+}
